@@ -13,7 +13,12 @@ func main() {
 	if err != nil {
 		panic(err)
 	}
-	defer f.Close()
+	defer func(f *os.File) {
+		err := f.Close()
+		if err != nil {
+			panic(err)
+		}
+	}(f)
 
 	lines, err := csv.NewReader(f).ReadAll()
 	if err != nil {
@@ -37,7 +42,7 @@ func main() {
 	wg.Wait()
 	close(lists)
 
-	fmt.Println(<- finalValue)
+	fmt.Println(<-finalValue)
 }
 
 func Map(player []string) []PlayerInfo {
